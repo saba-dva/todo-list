@@ -32,6 +32,6 @@ class Validator:
     
     @classmethod
     def validate_task_status(cls, status: str) -> None:
-        valid_statuses = [s.value for s in TaskStatus]
+        valid_statuses = ['todo', 'doing', 'done']
         if status not in valid_statuses:
             raise ValidationError(f"Status must be one of: {', '.join(valid_statuses)}")
