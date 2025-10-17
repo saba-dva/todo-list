@@ -17,3 +17,14 @@ class InMemoryStorage:
         if task.project_id not in self._project_tasks:
             self._project_tasks[task.project_id] = []
         self._project_tasks[task.project_id].append(task.id)
+        
+    def delete_task(self, task_id: str) -> None:
+        if task_id in self._tasks:
+            task = self._tasks[task_id]
+            if task.project_id in self._project_tasks:
+                # Remove task from project's task list
+                self._project_tasks[task.project_id] = [
+                    tid for tid in self._project_tasks[task.project_id] 
+                    if tid != task_id
+                ]
+            del self._tasks[task_id]
