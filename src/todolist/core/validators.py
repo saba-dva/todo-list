@@ -35,3 +35,22 @@ class Validator:
         valid_statuses = ['todo', 'doing', 'done']
         if status not in valid_statuses:
             raise ValidationError(f"Status must be one of: {', '.join(valid_statuses)}")
+
+    @classmethod
+    def validate_project_name(cls, name: str, existing_names: list[str]) -> None:
+        if not name or not name.strip():
+            raise ValidationError("Project name cannot be empty")
+        
+        if len(name) > cls.MAX_PROJECT_NAME_LENGTH:
+            raise ValidationError(f"Project name cannot exceed {cls.MAX_PROJECT_NAME_LENGTH} characters")
+        
+        if name in existing_names:
+            raise ValidationError("Project name already exists")
+            
+    @classmethod
+    def validate_project_description(cls, description: str) -> None:
+        if not description or not description.strip():
+            raise ValidationError("Project description cannot be empty")
+        
+        if len(description) > cls.MAX_PROJECT_DESCRIPTION_LENGTH:
+            raise ValidationError(f"Project description cannot exceed {cls.MAX_PROJECT_DESCRIPTION_LENGTH} characters")
