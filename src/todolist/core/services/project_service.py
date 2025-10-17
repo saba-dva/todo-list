@@ -17,12 +17,10 @@ class ProjectService:
         self.storage = storage
     
     def create_project(self, name: str, description: str) -> Project:
-        # Validate inputs
         existing_names = [p.name for p in self.storage.get_all_projects()]
         Validator.validate_project_name(name, existing_names)
         Validator.validate_project_description(description)
         
-        # Create project
         project_id = str(uuid.uuid4())
         now = datetime.now()
         project = Project(

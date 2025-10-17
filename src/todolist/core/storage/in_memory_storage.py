@@ -13,13 +13,11 @@ class InMemoryStorage:
     def __init__(self):
         self._projects: Dict[str, Project] = {}
         self._tasks: Dict[str, Task] = {}
-        self._project_tasks: Dict[str, List[str]] = {}  # project_id -> list of task_ids
+        self._project_tasks: Dict[str, List[str]] = {}
         
-        # Load limits from environment with defaults
         self.max_projects = int(os.getenv('MAX_NUMBER_OF_PROJECTS', 100))
         self.max_tasks_per_project = int(os.getenv('MAX_NUMBER_OF_TASKS', 1000))
     
-    # Project methods
     def create_project(self, project: Project) -> None:
         if len(self._projects) >= self.max_projects:
             raise LimitExceededError(f"Cannot exceed maximum of {self.max_projects} projects")
@@ -42,7 +40,6 @@ class InMemoryStorage:
     
     def delete_project(self, project_id: str) -> None:
         if project_id in self._projects:
-            # Cascade delete tasks
             task_ids = self._project_tasks.get(project_id, [])
             for task_id in task_ids:
                 del self._tasks[task_id]
@@ -56,7 +53,6 @@ class InMemoryStorage:
                 return True
         return False
     
-    # Task methods
     def create_task(self, task: Task) -> None:
         project_tasks = self._project_tasks.get(task.project_id, [])
         if len(project_tasks) >= self.max_tasks_per_project:
