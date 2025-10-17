@@ -17,3 +17,7 @@ class ValidationError(ToDoListException):
 class LimitExceededError(ToDoListException):
     """Raised when maximum number of projects/tasks is exceeded"""
     pass
+
+class TaskNotFoundError(ToDoListException):
+    """Raised when task is not found"""
+    pass
