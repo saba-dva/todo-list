@@ -1,4 +1,3 @@
-# src/todolist/core/validators.py
 import re
 from datetime import datetime
 from typing import Optional
