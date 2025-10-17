@@ -42,6 +42,9 @@ class ProjectService:
             raise ProjectNotFoundError(f"Project with ID {project_id} not found")
         return project
     
+    def get_all_projects(self) -> List[Project]:
+        return self.storage.get_all_projects()
+    
     def update_project(self, project_id: str, name: str, description: str) -> Project:
         project = self.get_project(project_id)
         
@@ -53,3 +56,7 @@ class ProjectService:
         project.update(name, description)
         self.storage.update_project(project)
         return project
+    
+    def delete_project(self, project_id: str) -> None:
+        project = self.get_project(project_id)
+        self.storage.delete_project(project_id)
