@@ -76,3 +76,7 @@ class TaskService:
         task.status = status
         self.storage.update_task(task)
         return task
+    
+    def delete_task(self, task_id: str) -> None:
+        task = self.get_task(task_id)
+        self.storage.delete_task(task_id)
