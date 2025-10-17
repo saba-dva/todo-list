@@ -20,15 +20,12 @@ class TaskService:
         description: str, 
         deadline: Optional[datetime] = None
     ) -> Task:
-        # Verify project exists
         self.project_service.get_project(project_id)
         
-        # Validate inputs
         Validator.validate_task_title(title)
         Validator.validate_task_description(description)
         Validator.validate_deadline(deadline)
         
-        # Create task with default status TODO
         task_id = str(uuid.uuid4())
         now = datetime.now()
         task = Task(
@@ -36,7 +33,7 @@ class TaskService:
             project_id=project_id,
             title=title,
             description=description,
-            status=TaskStatus.TODO,  # Default status
+            status=TaskStatus.TODO,
             deadline=deadline,
             created_at=now,
             updated_at=now
@@ -48,7 +45,6 @@ class TaskService:
     def update_task_status(self, task_id: str, status: TaskStatus) -> Task:
         task = self.get_task(task_id)
         
-        # Validate status is one of the three valid values
         if not isinstance(status, TaskStatus):
             raise ValidationError("Invalid task status")
         
@@ -60,4 +56,23 @@ class TaskService:
         task = self.storage.get_task(task_id)
         if not task:
             raise TaskNotFoundError(f"Task with ID {task_id} not found")
+        return task
+    
+    def update_task(
+        self, 
+        task_id: str, 
+        title: str, 
+        description: str, 
+        deadline: Optional[datetime],
+        status: TaskStatus
+    ) -> Task:
+        task = self.get_task(task_id)
+        
+        Validator.validate_task_title(title)
+        Validator.validate_task_description(description)
+        Validator.validate_deadline(deadline)
+        
+        task.update_details(title, description, deadline)
+        task.status = status
+        self.storage.update_task(task)
         return task
