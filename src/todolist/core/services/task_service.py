@@ -21,15 +21,12 @@ class TaskService:
         description: str, 
         deadline: Optional[datetime] = None
     ) -> Task:
-        # Verify project exists
         self.project_service.get_project(project_id)
         
-        # Validate inputs
         Validator.validate_task_title(title)
         Validator.validate_task_description(description)
         Validator.validate_deadline(deadline)
         
-        # Create task
         task_id = str(uuid.uuid4())
         now = datetime.now()
         task = Task(
@@ -53,7 +50,6 @@ class TaskService:
         return task
     
     def get_project_tasks(self, project_id: str) -> List[Task]:
-        # Verify project exists
         self.project_service.get_project(project_id)
         return self.storage.get_project_tasks(project_id)
     
@@ -73,7 +69,6 @@ class TaskService:
     ) -> Task:
         task = self.get_task(task_id)
         
-        # Validate inputs
         Validator.validate_task_title(title)
         Validator.validate_task_description(description)
         Validator.validate_deadline(deadline)
