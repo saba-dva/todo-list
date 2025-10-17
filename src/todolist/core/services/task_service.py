@@ -8,6 +8,7 @@ from ..core.validators import Validator
 from ..storage.in_memory_storage import InMemoryStorage
 from .project_service import ProjectService
 
+
 class TaskService:
     def __init__(self, storage: InMemoryStorage, project_service: ProjectService):
         self.storage = storage
@@ -42,20 +43,20 @@ class TaskService:
         self.storage.create_task(task)
         return task
     
-    def update_task_status(self, task_id: str, status: TaskStatus) -> Task:
-        task = self.get_task(task_id)
-        
-        if not isinstance(status, TaskStatus):
-            raise ValidationError("Invalid task status")
-        
-        task.update_status(status)
-        self.storage.update_task(task)
-        return task
-    
     def get_task(self, task_id: str) -> Task:
         task = self.storage.get_task(task_id)
         if not task:
             raise TaskNotFoundError(f"Task with ID {task_id} not found")
+        return task
+    
+    def get_project_tasks(self, project_id: str) -> List[Task]:
+        self.project_service.get_project(project_id)
+        return self.storage.get_project_tasks(project_id)
+    
+    def update_task_status(self, task_id: str, status: TaskStatus) -> Task:
+        task = self.get_task(task_id)
+        task.update_status(status)
+        self.storage.update_task(task)
         return task
     
     def update_task(

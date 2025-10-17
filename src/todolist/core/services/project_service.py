@@ -46,7 +46,6 @@ class ProjectService:
     def update_project(self, project_id: str, name: str, description: str) -> Project:
         project = self.get_project(project_id)
         
-        # Validate new name (exclude current project from duplicate check)
         existing_names = [p.name for p in self.storage.get_all_projects() if p.id != project_id]
         Validator.validate_project_name(name, existing_names)
         Validator.validate_project_description(description)
