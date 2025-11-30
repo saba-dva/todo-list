@@ -1,17 +1,19 @@
-from dataclasses import dataclass
+from sqlalchemy import Column, String, Text, DateTime, Integer
+from sqlalchemy.orm import relationship
 from datetime import datetime
-from typing import Optional
+from .base import Base
 
-
-@dataclass
-class Project:
-    id: str
-    name: str
-    description: str
-    created_at: datetime
-    updated_at: datetime
+class Project(Base):
+    __tablename__ = "projects"
     
-    def update(self, name: str, description: str) -> None:
-        self.name = name
-        self.description = description
-        self.updated_at = datetime.now()
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(30), nullable=False, unique=True)
+    description = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    
+    # Relationship with tasks
+    tasks = relationship("Task", back_populates="project", cascade="all, delete-orphan")
+    
+    def __repr__(self):
+        return f"<Project(id={self.id}, name='{self.name}')>"
