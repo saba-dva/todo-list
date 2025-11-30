@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from typing import Optional
-from .exceptions import ValidationError
+from ..exceptions.exceptions import ValidationError
 
 class Validator:
     MAX_PROJECT_NAME_LENGTH = 30

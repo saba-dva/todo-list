@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 from ..core.entities.project import Project
 from ..core.entities.task import Task, TaskStatus
-from ..core.exceptions import LimitExceededError
+from ..exceptions.exceptions import LimitExceededError
 
 load_dotenv()
 

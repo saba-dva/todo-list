@@ -3,9 +3,9 @@ from datetime import datetime
 import uuid
 
 from ..core.entities.task import Task, TaskStatus
-from ..core.exceptions import TaskNotFoundError, ValidationError
-from ..core.validators import Validator
-from ..storage.in_memory_storage import InMemoryStorage
+from ..exceptions.exceptions import TaskNotFoundError, ValidationError
+from ..validators.validators import Validator
+from ..db.in_memory_storage import InMemoryStorage
 from .project_service import ProjectService
 
 

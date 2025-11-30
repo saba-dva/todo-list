@@ -2,11 +2,11 @@ import click
 from datetime import datetime
 from typing import Optional
 
-from todolist.core.entities.task import TaskStatus
-from todolist.core.exceptions import ToDoListException
-from todolist.storage.in_memory_storage import InMemoryStorage
-from todolist.services.project_service import ProjectService
-from todolist.services.task_service import TaskService
+from app.core.entities.task import TaskStatus
+from exceptions.exceptions import ToDoListException
+from app.db.in_memory_storage import InMemoryStorage
+from app.services.project_service import ProjectService
+from app.services.task_service import TaskService
 
 
 class ToDoListCLI:

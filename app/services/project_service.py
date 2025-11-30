@@ -3,13 +3,13 @@ from datetime import datetime
 import uuid
 
 from ..core.entities.project import Project
-from ..core.exceptions import (
+from ..exceptions.exceptions import (
     ProjectNotFoundError, 
     DuplicateProjectError, 
     ValidationError
 )
-from ..core.validators import Validator
-from ..storage.in_memory_storage import InMemoryStorage
+from ..validators.validators import Validator
+from ..db.in_memory_storage import InMemoryStorage
 
 
 class ProjectService:
