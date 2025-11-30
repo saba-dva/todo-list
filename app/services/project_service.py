@@ -1,59 +1,58 @@
 from typing import List
 from datetime import datetime
-import uuid
-
-from ..core.entities.project import Project
-from ..exceptions.exceptions import (
-    ProjectNotFoundError, 
-    DuplicateProjectError, 
-    ValidationError
-)
-from ..validators.validators import Validator
-from ..db.in_memory_storage import InMemoryStorage
-
+from sqlalchemy.orm import Session
+from app.models.project import Project
+from app.repositories.project_repository import ProjectRepository
+from app.repositories.task_repository import TaskRepository
+from app.validators.project_validators import ProjectValidator
+from app.exceptions.service_exceptions import LimitExceededError
+from app.exceptions.repository_exceptions import ProjectNotFoundError, DuplicateProjectError
+import os
 
 class ProjectService:
-    def __init__(self, storage: InMemoryStorage):
-        self.storage = storage
+    def __init__(self, db_session: Session):
+        self.project_repo = ProjectRepository(db_session)
+        self.task_repo = TaskRepository(db_session)
+        self.max_projects = int(os.getenv('MAX_NUMBER_OF_PROJECTS', 100))
     
     def create_project(self, name: str, description: str) -> Project:
-        existing_names = [p.name for p in self.storage.get_all_projects()]
-        Validator.validate_project_name(name, existing_names)
-        Validator.validate_project_description(description)
+        # Validate inputs using validators
+        ProjectValidator.validate_name(name)
+        ProjectValidator.validate_description(description)
         
-        project_id = str(uuid.uuid4())
-        now = datetime.now()
+        # Check project limit
+        projects = self.project_repo.get_all()
+        ProjectValidator.validate_project_limits(len(projects), self.max_projects)
+        
         project = Project(
-            id=project_id,
             name=name,
-            description=description,
-            created_at=now,
-            updated_at=now
+            description=description
         )
         
-        self.storage.create_project(project)
-        return project
+        return self.project_repo.create(project)
     
-    def get_project(self, project_id: str) -> Project:
-        project = self.storage.get_project(project_id)
+    def get_project(self, project_id: int) -> Project:
+        project = self.project_repo.get(project_id)
         if not project:
             raise ProjectNotFoundError(f"Project with ID {project_id} not found")
         return project
     
     def get_all_projects(self) -> List[Project]:
-        return self.storage.get_all_projects()
+        return self.project_repo.get_all_ordered()
     
-    def update_project(self, project_id: str, name: str, description: str) -> Project:
+    def update_project(self, project_id: int, name: str, description: str) -> Project:
         project = self.get_project(project_id)
         
-        existing_names = [p.name for p in self.storage.get_all_projects() if p.id != project_id]
-        Validator.validate_project_name(name, existing_names)
-        Validator.validate_project_description(description)
+        # Validate new inputs using validators
+        ProjectValidator.validate_name(name)
+        ProjectValidator.validate_description(description)
         
-        project.update(name, description)
-        self.storage.update_project(project)
-        return project
+        project.name = name
+        project.description = description
+        project.updated_at = datetime.now()
+        
+        return self.project_repo.update(project)
     
-    def delete_project(self, project_id: str) -> None:
+    def delete_project(self, project_id: int) -> None:
         project = self.get_project(project_id)
-        self.storage.delete_project(project_id)
+        self.project_repo.delete(project_id)
