@@ -1,19 +1,23 @@
 import click
 from datetime import datetime
 from typing import Optional
+from sqlalchemy.orm import Session
 
-from app.core.entities.task import TaskStatus
-from exceptions.exceptions import ToDoListException
-from app.db.in_memory_storage import InMemoryStorage
+from app.db.session import db_session
 from app.services.project_service import ProjectService
 from app.services.task_service import TaskService
-
+from app.models.task import TaskStatus
+from app.exceptions.base import ToDoListException
 
 class ToDoListCLI:
     def __init__(self):
-        self.storage = InMemoryStorage()
-        self.project_service = ProjectService(self.storage)
-        self.task_service = TaskService(self.storage, self.project_service)
+        self.db_session = db_session.get_session()
+        self.project_service = ProjectService(self.db_session)
+        self.task_service = TaskService(self.db_session)
+    
+    def __del__(self):
+        if hasattr(self, 'db_session'):
+            self.db_session.close()
     
     def display_error(self, message: str) -> None:
         click.echo(click.style(f"Error: {message}", fg='red'))
@@ -42,7 +46,7 @@ class ToDoListCLI:
         except ValueError:
             raise ValueError("Invalid date format. Use YYYY-MM-DD or type 'skip'")
     
-    def choose_project_interactive(self, prompt_text: str = "Select project") -> str:
+    def choose_project_interactive(self, prompt_text: str = "Select project") -> int:
         """Let user choose a project from list"""
         projects = self.project_service.get_all_projects()
         if not projects:
@@ -62,7 +66,7 @@ class ToDoListCLI:
             except ValueError:
                 self.display_error("Please enter a valid number")
     
-    def choose_task_interactive(self, project_id: str, prompt_text: str = "Select task") -> str:
+    def choose_task_interactive(self, project_id: int, prompt_text: str = "Select task") -> int:
         """Let user choose a task from list"""
         tasks = self.task_service.get_project_tasks(project_id)
         if not tasks:
@@ -373,10 +377,11 @@ class ToDoListCLI:
             click.echo("6. Change Task Status")
             click.echo("7. Edit Task")
             click.echo("8. Delete Task")
+            click.echo("9. Auto-Close Overdue Tasks")
             click.echo("0. Exit")
             click.echo()
             
-            choice = click.prompt("Choose an option (0-8)", type=int)
+            choice = click.prompt("Choose an option (0-9)", type=int)
             
             if choice == 0:
                 self.show_header()
@@ -398,6 +403,10 @@ class ToDoListCLI:
                 self.edit_task_menu()
             elif choice == 8:
                 self.delete_task_menu()
+            elif choice == 9:
+                from app.commands.autoclose_overdue import autoclose_overdue_tasks
+                autoclose_overdue_tasks()
+                click.pause()
             else:
                 self.display_error("Invalid choice! Please try again.")
                 click.pause()
