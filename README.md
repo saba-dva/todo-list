@@ -27,6 +27,23 @@ This project implements a comprehensive task management system where users can c
 ## How To Run
 How to Run the ToDoList Application
 
+### Deprecation Notice — CLI (Phase 3)
+
+**Important:** From Phase 3 onwards the CLI is **deprecated**. That means:
+
+- The CLI still exists and works for now, but **it's no longer the primary interface**.
+- All new features will be implemented only via the **Web API (FastAPI)**.
+- Users/developers are **recommended** to migrate to the Web API.
+- The CLI will be fully removed in a future release.
+
+**How to start the API:**
+```bash
+# using uvicorn:
+uvicorn app.main:app --reload
+# or via the project's CLI:
+python main.py api --reload
+```
+
 ### Prerequisites
 
 Python 3.8.1 or higher
