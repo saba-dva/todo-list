@@ -1,11 +1,10 @@
 import click
-from sqlalchemy.orm import Session
 from app.db.session import db_session
 from app.services.task_service import TaskService
 
 def autoclose_overdue_tasks():
     """Automatically close overdue tasks"""
-    session: Session = db_session.get_session()
+    session = db_session.get_session()
     try:
         task_service = TaskService(session)
         overdue_tasks = task_service.get_overdue_tasks()
@@ -19,7 +18,10 @@ def autoclose_overdue_tasks():
             except Exception as e:
                 click.echo(f"Error closing task {task.id}: {str(e)}")
         
-        click.echo(f"Successfully closed {closed_count} overdue tasks")
+        if closed_count == 0:
+            click.echo("No overdue tasks found")
+        else:
+            click.echo(f"Successfully closed {closed_count} overdue tasks")
         
     except Exception as e:
         click.echo(f"Error in autoclose process: {str(e)}")
@@ -31,3 +33,6 @@ def autoclose_overdue_tasks():
 def autoclose_overdue():
     """Command to close overdue tasks"""
     autoclose_overdue_tasks()
+
+if __name__ == '__main__':
+    autoclose_overdue()
