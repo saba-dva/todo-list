@@ -87,23 +87,12 @@ poetry run python main.py menu
 Database Setup
 ```
 
-### Using SQLite (Default, Easiest)
+### Using PostgreSQL
 
-The application uses SQLite by default. No additional setup is required. The database file todolist.db will be created automatically in the project directory.
-
-Using PostgreSQL (Optional)
-
-If you prefer PostgreSQL:
+The application uses PostgreSQL by default. No additional setup is required. The database file todolist.db will be created automatically in the project directory.
 
 Start PostgreSQL with Docker:
 
-bash
+```bash
 docker-compose up -d
-Update your .env file:
-
-env
-DATABASE_URL=postgresql://todolist_user:todolist_password@localhost:5432/todolist
-Run database migrations:
-
-bash
-poetry run alembic upgrade head
+```
