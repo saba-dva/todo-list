@@ -24,9 +24,6 @@ This project implements a comprehensive task management system where users can c
 -  Deadline validation
 -  Character limit enforcement (30 chars for title, 150 for description)
 
-## How To Run
-How to Run the ToDoList Application
-
 ### Deprecation Notice — CLI (Phase 3)
 
 **Important:** From Phase 3 onwards the CLI is **deprecated**. That means:
@@ -36,13 +33,8 @@ How to Run the ToDoList Application
 - Users/developers are **recommended** to migrate to the Web API.
 - The CLI will be fully removed in a future release.
 
-**How to start the API:**
-```bash
-# using uvicorn:
-uvicorn app.main:app --reload
-# or via the project's CLI:
-python main.py api --reload
-```
+## How To Run
+How to Run the ToDoList Application
 
 ### Prerequisites
 
@@ -76,15 +68,42 @@ cp .env.example .env
 # Edit .env file with your preferred editor
 # The default uses SQLite, no additional setup required
 ```
+
+### Using PostgreSQL
+
+The application uses PostgreSQL by default. No additional setup is required. The database file todolist.db will be created automatically in the project directory.
+
+Start PostgreSQL with Docker:
+
+```bash
+# 1. Start PostgreSQL with Docker
+docker-compose up -d
+
+# 2. Install dependencies
+poetry install
+
+# 3. Initialize database
+poetry run python main.py init-db
+```
+
+
 ### Running the Application
 
-Method 1: Interactive Menu (Recommended)
+Method 1: Api Auto-Documentation
+```bash
+# Run the API
+poetry run python main.py api-server
+```
+
+Visit: http://localhost:8000/docs
+
+Method 2: Interactive Menu
 
 ```bash
 # Start the interactive command-line interface
 poetry run python main.py menu
 ```
-Method 2: Individual Commands
+Method 3: Individual Commands
 
 ```bash
 # Show all available commands
@@ -99,17 +118,4 @@ poetry run python main.py scheduler
 # Initialize database tables
 poetry run python main.py init-db
 
-# Start the interactive menu
-poetry run python main.py menu
-Database Setup
-```
-
-### Using PostgreSQL
-
-The application uses PostgreSQL by default. No additional setup is required. The database file todolist.db will be created automatically in the project directory.
-
-Start PostgreSQL with Docker:
-
-```bash
-docker-compose up -d
 ```
