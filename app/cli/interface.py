@@ -129,6 +129,33 @@ class ToDoListCLI:
             self.display_error(str(e))
             click.pause()
     
+    def edit_project_menu(self):
+        self.show_header()
+        click.echo(click.style("EDIT PROJECT", fg='magenta', bold=True))
+        click.echo()
+        
+        try:
+            project_id = self.choose_project_interactive("Choose project to edit")
+            project = self.project_service.get_project(project_id)
+            
+            click.echo(f"\nCurrent project: {click.style(project.name, fg='yellow')}")
+            click.echo(f"Current description: {project.description}")
+            click.echo()
+            
+            # Get new values from user
+            name = click.prompt("New project name", default=project.name)
+            description = click.prompt("New project description", default=project.description)
+            
+            # Update the project
+            updated_project = self.project_service.update_project(project_id, name, description)
+            self.display_success(f"Project '{updated_project.name}' updated successfully!")
+            
+            click.pause()
+            
+        except ToDoListException as e:
+            self.display_error(str(e))
+            click.pause()
+    
     def delete_project_menu(self):
         self.show_header()
         click.echo(click.style("DELETE PROJECT", fg='red', bold=True))
@@ -371,13 +398,13 @@ class ToDoListCLI:
             click.echo()
             click.echo("1. Create Project")
             click.echo("2. List Projects") 
-            click.echo("3. Delete Project")
-            click.echo("4. Create Task")
-            click.echo("5. View Project Tasks")
-            click.echo("6. Change Task Status")
-            click.echo("7. Edit Task")
-            click.echo("8. Delete Task")
-            click.echo("9. Auto-Close Overdue Tasks")
+            click.echo("3. Edit Project")
+            click.echo("4. Delete Project")
+            click.echo("5. Create Task")
+            click.echo("6. View Project Tasks")
+            click.echo("7. Change Task Status")
+            click.echo("8. Edit Task")
+            click.echo("9. Delete Task")
             click.echo("0. Exit")
             click.echo()
             
@@ -392,21 +419,19 @@ class ToDoListCLI:
             elif choice == 2:
                 self.list_projects_menu()
             elif choice == 3:
-                self.delete_project_menu()
+                self.edit_project_menu()
             elif choice == 4:
-                self.create_task_menu()
+                self.delete_project_menu()
             elif choice == 5:
-                self.list_tasks_menu()
+                self.create_task_menu()
             elif choice == 6:
-                self.change_task_status_menu()
+                self.list_tasks_menu()
             elif choice == 7:
-                self.edit_task_menu()
+                self.change_task_status_menu()
             elif choice == 8:
-                self.delete_task_menu()
+                self.edit_task_menu()
             elif choice == 9:
-                from app.commands.autoclose_overdue import autoclose_overdue_tasks
-                autoclose_overdue_tasks()
-                click.pause()
+                self.delete_task_menu()
             else:
                 self.display_error("Invalid choice! Please try again.")
                 click.pause()

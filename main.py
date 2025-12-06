@@ -1,60 +1,70 @@
-#!/usr/bin/env python3
 """
-Main entry point for the ToDoList application
+Main entry point for the ToDoList application.
+
+NOTE (Deprecation):
+-------------------
+The CLI is deprecated. New development and all new features should be provided
+through the FastAPI web API. The CLI will remain temporarily for backward compatibility,
+but it is recommended to migrate clients to the API. See README.md -> "Deprecation Notice".
 """
 
 import click
-import sys
-import os
 from dotenv import load_dotenv
 
-# Load environment variables early
+# Import FastAPI app for ASGI server
+from api.app import app
+
 load_dotenv()
+
+DEPRECATION_MESSAGE = (
+    "\nCLI Deprecated: Please prefer the Web API (see README.md).\n"
+    "CLI interface is deprecated and will be removed in the next release. Please use the FastAPI HTTP interface instead."
+)
 
 @click.group()
 def cli():
-    """ToDoList Application - Manage your projects and tasks"""
+    click.echo(DEPRECATION_MESSAGE)
+    """ToDoList App CLI + API"""
     pass
 
-@cli.command(name='menu')
-def menu_command():
-    """Start the interactive menu"""
-    try:
-        from app.cli.interface import main as menu_main
-        menu_main()
-    except ImportError as e:
-        click.echo(f"Error: {e}")
-        click.echo("Make sure all dependencies are installed and modules exist")
+@cli.command("api-server")
+@click.option("--host", default="0.0.0.0")
+@click.option("--port", default=8000)
+@click.option("--reload", is_flag=True)
+def api_server(host, port, reload):
+    import uvicorn
+    uvicorn.run(
+        "main:app",
+        host=host,
+        port=port,
+        reload=reload,
+    )
 
-@cli.command(name='close-overdue')
-def close_overdue_command():
-    """Close overdue tasks manually"""
-    try:
-        from app.commands.autoclose_overdue import autoclose_overdue_tasks
-        autoclose_overdue_tasks()
-    except ImportError as e:
-        click.echo(f"Error: {e}")
-        click.echo("Make sure the autoclose_overdue module exists")
 
-@cli.command(name='scheduler')
-def scheduler_command():
-    """Start the scheduler for auto-closing overdue tasks"""
-    try:
-        from app.commands.scheduler import start_scheduler
-        start_scheduler()
-    except ImportError as e:
-        click.echo(f"Error: {e}")
-        click.echo("Make sure the scheduler module exists")
+@cli.command("menu")
+def menu():
+    from app.cli.interface import main
+    main()
 
-@cli.command(name='init-db')
-def init_db_command():
-    """Initialize database tables"""
-    try:
-        from app.db.session import db_session
-        db_session.create_tables()
-        click.echo("✓ Database tables created successfully!")
-    except Exception as e:
-        click.echo(f"✗ Error creating database tables: {e}")
 
-if __name__ == '__main__':
+@cli.command("scheduler")
+def scheduler():
+    from app.commands.scheduler import start_scheduler
+    start_scheduler()
+
+
+@cli.command("close-overdue")
+def close_overdue():
+    from app.commands.autoclose_overdue import autoclose_overdue_tasks
+    autoclose_overdue_tasks()
+
+
+@cli.command("init-db")
+def init_db():
+    from app.db.session import db_session
+    db_session.create_tables()
+    click.echo("Database initialized.")
+
+
+if __name__ == "__main__":
     cli()

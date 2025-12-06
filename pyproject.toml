@@ -1,29 +1,41 @@
 [tool.poetry]
 name = "todolist"
-version = "0.2.0"
-description = "A simple ToDoList application with database storage"
-authors = ["Your Name <your.email@example.com>"]
-readme = "README.md"
+version = "0.1.0"
+description = "ToDoList - Phase 3 (FastAPI)"
+authors = ["Your Name <you@example.com>"]
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.9"
-python-dotenv = "^1.0.0"
-click = "^8.1.0"
-sqlalchemy = "^2.0.0"
-alembic = "^1.12.0"
-schedule = "^1.2.0"
-psycopg2-binary = "^2.9.11"
+python = "^3.13"
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.0.0"
-black = "^23.0.0"
-flake8 = "^6.0.0"
-mypy = "^1.0.0"
-pytest-cov = "^4.1.0"
+fastapi = "^0.95.0"
+uvicorn = {extras = ["standard"], version = "^0.22.0"}
+
+# Database
+SQLAlchemy = "^2.0"
+alembic = "^1.11.1"
+psycopg2-binary = "^2.9.0"
+
+# Pydantic v1 (for FastAPI 0.95)
+pydantic = {version = "^1.10.7", extras = ["email"]}
+
+# JWT + Password
+python-jose = "^3.3.0"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+
+# Utils
+python-dotenv = "^1.0.0"
+email-validator = "^2.1.0"
+
+# Used by your scheduler
+schedule = "^1.2.0"
+click = "^8.3.1"
+
+[tool.poetry.scripts]
+start = "uvicorn main:app --host 0.0.0.0 --port 8000"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.alembic]
